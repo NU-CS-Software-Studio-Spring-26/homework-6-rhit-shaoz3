@@ -61,6 +61,7 @@ end
 group :test do
   gem "cucumber-rails", require: false
   gem "database_cleaner-active_record"
+  gem "simplecov", require: false
 
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
