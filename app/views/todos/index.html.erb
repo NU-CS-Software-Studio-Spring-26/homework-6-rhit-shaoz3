@@ -4,6 +4,15 @@
 
 <h1>Todos</h1>
 
+<%= form_with url: todos_path, method: :get do |form| %>
+  <div>
+    <%= form.label :category, "Filter by category" %>
+    <%= form.select :category,
+          options_for_select([ [ "All", "" ] ] + Todo::CATEGORIES.map { |category| [ category, category ] }, @selected_category) %>
+    <%= form.submit "Apply filter" %>
+  </div>
+<% end %>
+
 <div id="todos">
   <% @todos.each do |todo| %>
     <%= render todo %>

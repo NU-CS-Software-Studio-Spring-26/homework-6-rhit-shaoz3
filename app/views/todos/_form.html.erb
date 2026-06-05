@@ -17,6 +17,13 @@
   </div>
 
   <div>
+    <%= form.label :category, style: "display: block" %>
+    <%= form.select :category,
+          options_for_select(Todo::CATEGORIES, todo.category),
+          { include_blank: todo.new_record? ? "Select a category" : false } %>
+  </div>
+
+  <div>
     <%= form.submit %>
   </div>
 <% end %>
