@@ -5,7 +5,7 @@ class TodosController < ApplicationController
   def index
     @todos = Todo.all
     if params[:category].present? && Todo::CATEGORIES.include?(params[:category])
-      @todos = @todos.where(category: params[:category])
+      @todos = @todos.with_category(params[:category])
     end
     @selected_category = params[:category]
   end
