@@ -4,6 +4,10 @@ class TodosController < ApplicationController
   # GET /todos or /todos.json
   def index
     @todos = Todo.all
+    if params[:category].present? && Todo::CATEGORIES.include?(params[:category])
+      @todos = @todos.with_category(params[:category])
+    end
+    @selected_category = params[:category]
   end
 
   # GET /todos/1 or /todos/1.json
@@ -36,14 +40,18 @@ class TodosController < ApplicationController
 
   # PATCH/PUT /todos/1 or /todos/1.json
   def update
-    respond_to do |format|
-      if @todo.update(todo_params)
+    if category_missing_from_request?
+      @todo.errors.add(:category, "must be selected")
+      return render_update_errors
+    end
+
+    if @todo.update(todo_params)
+      respond_to do |format|
         format.html { redirect_to @todo, notice: "Todo was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @todo }
-      else
-        format.html { render :edit, status: :unprocessable_content }
-        format.json { render json: @todo.errors, status: :unprocessable_content }
       end
+    else
+      render_update_errors
     end
   end
 
@@ -72,6 +80,18 @@ class TodosController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def todo_params
-      params.expect(todo: [ :description ])
+      params.require(:todo).permit(:description, :category)
+    end
+
+    def category_missing_from_request?
+      todo_params = params[:todo]
+      todo_params.nil? || !todo_params.key?(:category)
+    end
+
+    def render_update_errors
+      respond_to do |format|
+        format.html { render :edit, status: :unprocessable_content }
+        format.json { render json: @todo.errors, status: :unprocessable_content }
+      end
     end
 end

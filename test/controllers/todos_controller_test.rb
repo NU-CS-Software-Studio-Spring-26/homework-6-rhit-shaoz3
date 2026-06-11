@@ -10,6 +10,19 @@ class TodosControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "should filter index by category" do
+    get todos_url, params: { category: "work" }
+    assert_response :success
+    assert_select "strong", text: "Category:"
+    assert_select "p", text: /Category:\s*work/
+  end
+
+  test "should show all todos when filter is All" do
+    get todos_url, params: { category: "" }
+    assert_response :success
+    assert_select "#todo_#{@todo.id}"
+  end
+
   test "should get new" do
     get new_todo_url
     assert_response :success
@@ -17,7 +30,7 @@ class TodosControllerTest < ActionDispatch::IntegrationTest
 
   test "should create todo" do
     assert_difference("Todo.count") do
-      post todos_url, params: { todo: { description: @todo.description } }
+      post todos_url, params: { todo: { description: @todo.description, category: @todo.category } }
     end
 
     assert_redirected_to todo_url(Todo.last)
@@ -34,7 +47,7 @@ class TodosControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update todo" do
-    patch todo_url(@todo), params: { todo: { description: @todo.description } }
+    patch todo_url(@todo), params: { todo: { description: @todo.description, category: @todo.category } }
     assert_redirected_to todo_url(@todo)
   end
 
